@@ -1,8 +1,11 @@
 <div align="center">
+  <img src="../docs/assets/captureimage-icon.svg" alt="CaptureImage icon" width="120" height="120">
+
   <h1>CaptureImage</h1>
+
   <p>
     A lightweight native macOS screenshot utility for fast area capture,
-    floating preview, and quick image actions.
+    floating previews, and quick image actions.
   </p>
 
   <p>
@@ -23,63 +26,62 @@
   </p>
 
   <p>
-    Tiếng Việt · English · Français · Latina
+    English · Vietnamese · French · Latin
   </p>
 </div>
 
 ---
 
-## Giới Thiệu
+## Overview
 
-CaptureImage là một ứng dụng chụp ảnh màn hình cho macOS, tập trung vào thao tác nhanh: chọn vùng cần chụp, lưu ảnh PNG, copy vào clipboard, và hiển thị danh sách ảnh vừa chụp ở cạnh màn hình.
+CaptureImage is a native macOS screenshot utility focused on speed. It lets you capture a selected screen area, save it as PNG, copy it to the clipboard, and keep recent captures in a floating shelf on the side of the screen.
 
-Ứng dụng được thiết kế như một menu bar utility, không chiếm Dock, phù hợp cho workflow cần chụp nhiều ảnh liên tục khi làm việc, test UI, viết tài liệu, hoặc gửi minh họa nhanh.
+The app is designed as a menu bar utility, so it stays out of the Dock and fits workflows where you need to capture multiple screenshots while testing UI, writing documentation, or sharing visual notes quickly.
 
-## Tính Năng
+## Features
 
-- Chụp một vùng màn hình bằng phím tắt `Command + S`.
-- Kéo chuột để chọn vùng cần chụp.
-- Lưu ảnh PNG vào `~/Pictures/CaptureImage`.
-- Copy ảnh đã chụp vào clipboard.
-- Hiển thị floating capture shelf ở cạnh trái màn hình.
-- Ảnh mới nhất nằm trên cùng danh sách.
-- Danh sách ảnh có thể scroll khi có nhiều ảnh.
-- Hiển thị `+N` khi còn ảnh nằm ngoài vùng đang nhìn thấy.
-- Kéo ảnh từ shelf vào Finder hoặc folder để tạo bản PNG copy.
-- Chuột phải vào ảnh để mở menu thao tác nhanh.
-- Chụp lại vùng đã chọn gần nhất từ menu bar.
-- Hỗ trợ đổi ngôn ngữ trong app: English, Tiếng Việt, Français, Latina.
+- Capture a selected screen area with `Command + S`.
+- Drag to select the exact area you want to capture.
+- Save PNG files to `~/Pictures/CaptureImage`.
+- Copy captured images to the clipboard.
+- Show recent captures in a floating shelf on the left side of the screen.
+- Keep newest captures at the top of the shelf.
+- Scroll the capture shelf when many images are available.
+- Show a `+N` indicator when more images are outside the visible area.
+- Drag a capture card into Finder or folders to create a PNG copy.
+- Right-click an image to open quick actions.
+- Repeat the last captured area from the menu bar.
+- Switch the app language between English, Vietnamese, French, and Latin.
 
-## Menu Chuột Phải Trên Ảnh
+## Image Context Menu
 
-Khi chuột phải vào ảnh trong capture shelf, app hỗ trợ:
+Right-click any image in the capture shelf to:
 
-- Phóng to ảnh trong cửa sổ preview.
-- Copy ảnh vào clipboard.
-- Mở file ảnh.
-- Hiển thị file trong Finder.
-- Xóa ảnh khỏi danh sách shelf.
+- Open a larger image preview.
+- Copy the image to the clipboard.
+- Open the image file.
+- Reveal the image in Finder.
+- Remove the image from the shelf.
 
-## Cách Sử Dụng
+## Usage
 
-1. Mở app `CaptureImage`.
-2. Bấm icon `Capture` trên menu bar.
-3. Chọn `Capture Area` hoặc dùng phím tắt `Command + S`.
-4. Kéo chuột để chọn vùng màn hình cần chụp.
-5. Sau khi chụp, ảnh sẽ xuất hiện trong capture shelf bên trái.
-6. Scroll danh sách nếu có nhiều ảnh.
-7. Chuột phải vào ảnh để chọn tool phù hợp.
+1. Open `CaptureImage`.
+2. Click the `Capture` menu bar item.
+3. Choose `Capture Area` or press `Command + S`.
+4. Drag to select the screen area.
+5. Release the mouse to capture.
+6. Use the floating shelf to review, scroll, drag, or right-click recent captures.
 
-## Phím Tắt
+## Shortcuts
 
-| Hành động | Phím tắt |
+| Action | Shortcut |
 | --- | --- |
 | Capture Area | `Command + S` |
 | Repeat Last Area | `Command + R` |
 | Open Save Folder | `Command + O` |
 | Quit CaptureImage | `Command + Q` |
 
-Bạn cũng có thể mở menu bar item và chọn `Show Shortcuts` để xem danh sách phím tắt trong app.
+You can also open the menu bar item and choose `Show Shortcuts` to view the shortcut list in the app.
 
 ## Tech Stack
 
@@ -89,68 +91,68 @@ Bạn cũng có thể mở menu bar item và chọn `Show Shortcuts` để xem d
 - macOS 14+
 - Carbon HotKey APIs
 - CoreGraphics screen capture
-- NSPanel, NSScrollView, NSMenu
+- `NSPanel`, `NSScrollView`, `NSMenu`
 - VIPER-style module structure
 
-## Kiến Trúc Dự Án
+## Project Structure
 
 ```text
 CaptureImage/
-├── App/                 # AppDelegate và menu bar lifecycle
-├── Helpers/             # Hotkey, screen capture, shelf, storage, clipboard
+├── App/                 # AppDelegate and menu bar lifecycle
+├── Helpers/             # Hotkeys, screen capture, shelf, storage, clipboard
 ├── Modules/Capture/     # Capture View, Interactor, Presenter, Entity, Router
 ├── Utils/               # Theme, constants, localization, filename builder
 ├── Tests/               # Unit tests
 ├── scripts/             # Build scripts
-└── Packaging/           # Info.plist cho app bundle
+└── Packaging/           # Info.plist for the app bundle
 ```
 
-## Build Và Chạy
+## Build And Run
 
-Trong project này, script chính để build bản mới và mở app là:
+The recommended local workflow is:
 
 ```bash
 cd "/Users/tien/Documents/New MacOS Tool/CaptureImage"
 scripts/build-and-run.sh
 ```
 
-Script này sẽ:
+This script will:
 
-- Build release app.
-- Tắt bản `CaptureImage` cũ nếu đang chạy.
-- Cập nhật shortcut `CaptureImage` trên Desktop trỏ tới bản mới.
-- Mở app mới sau khi build xong.
+- Build the release app.
+- Stop the old `CaptureImage` process if it is running.
+- Update the Desktop `CaptureImage` shortcut to point to the latest build.
+- Open the new app after the build completes.
 
-## Build App Bundle
+## Build App Bundle Only
 
-Nếu chỉ muốn build app bundle mà chưa mở app:
+To build the app bundle without opening it:
 
 ```bash
 cd "/Users/tien/Documents/New MacOS Tool/CaptureImage"
 scripts/build-app.sh
 ```
 
-App sau khi build nằm tại:
+The generated app is located at:
 
 ```text
 CaptureImage/.build/CaptureImage.app
 ```
 
-## Quyền Trên macOS
+## macOS Permissions
 
-macOS có thể yêu cầu quyền Screen Recording khi app chụp nội dung từ màn hình hoặc cửa sổ app khác.
+macOS may require Screen Recording permission before the app can capture content from the screen or from other app windows.
 
-Nếu capture không hoạt động, mở:
+If capture does not work, open:
 
 ```text
 System Settings > Privacy & Security > Screen Recording
 ```
 
-Sau đó bật quyền cho `CaptureImage` và mở lại app.
+Then enable permission for `CaptureImage` and restart the app.
 
-## Ghi Chú
+## Notes
 
-`Command + S` được dùng cho MVP vì app ưu tiên thao tác chụp nhanh một bước. Phím tắt này có thể trùng với lệnh Save của app đang focus.
+`Command + S` is used for the MVP because CaptureImage is optimized for one-step capture. This shortcut may conflict with the Save command in the currently focused app.
 
 ## Portfolio
 
