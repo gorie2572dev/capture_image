@@ -61,21 +61,13 @@ enum CaptureLogger {
             return URL(fileURLWithPath: override, isDirectory: true)
         }
 
-        let home = fileManager.homeDirectoryForCurrentUser
-        let workingProject = home
-            .appendingPathComponent("working", isDirectory: true)
-            .appendingPathComponent("CaptureImage", isDirectory: true)
-            .appendingPathComponent("logs", isDirectory: true)
-        if canUseDirectory(workingProject) {
-            return workingProject
-        }
-
         let currentProject = URL(fileURLWithPath: fileManager.currentDirectoryPath, isDirectory: true)
             .appendingPathComponent("logs", isDirectory: true)
         if canUseDirectory(currentProject) {
             return currentProject
         }
 
+        let home = fileManager.homeDirectoryForCurrentUser
         let documentsProject = home
             .appendingPathComponent("Documents", isDirectory: true)
             .appendingPathComponent("New MacOS Tool", isDirectory: true)
@@ -83,6 +75,14 @@ enum CaptureLogger {
             .appendingPathComponent("logs", isDirectory: true)
         if canUseDirectory(documentsProject) {
             return documentsProject
+        }
+
+        let workingProject = home
+            .appendingPathComponent("working", isDirectory: true)
+            .appendingPathComponent("CaptureImage", isDirectory: true)
+            .appendingPathComponent("logs", isDirectory: true)
+        if canUseDirectory(workingProject) {
+            return workingProject
         }
 
         return home

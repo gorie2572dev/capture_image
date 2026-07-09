@@ -52,12 +52,16 @@ final class CaptureRouter: CaptureRouting {
         alert.messageText = title
         alert.informativeText = message
         alert.alertStyle = .warning
-        alert.runModal()
+        alert.window.animationBehavior = .none
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0
+            alert.runModal()
+        }
     }
 
     private func dismissOverlay() {
         CaptureLogger.info("Dismissing capture overlay")
-        overlayWindow?.close()
+        overlayWindow?.dismissWithoutAnimation()
         overlayWindow = nil
     }
 }

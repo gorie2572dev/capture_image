@@ -19,6 +19,8 @@ final class CaptureOverlayWindow: NSWindow {
         )
         isOpaque = false
         backgroundColor = .clear
+        animationBehavior = .none
+        isReleasedWhenClosed = false
         level = .screenSaver
         collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
         ignoresMouseEvents = false
@@ -37,10 +39,21 @@ final class CaptureOverlayWindow: NSWindow {
     }
 
     func show() {
-        setFrame(combinedScreenFrame, display: true)
-        CaptureLogger.info("Showing overlay window over frame \(frame.debugDescription)")
-        makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0
+            setFrame(combinedScreenFrame, display: true)
+            CaptureLogger.info("Showing overlay window over frame \(frame.debugDescription)")
+            makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+        }
+    }
+
+    func dismissWithoutAnimation() {
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0
+            orderOut(nil)
+            close()
+        }
     }
 
     override var canBecomeKey: Bool { true }
