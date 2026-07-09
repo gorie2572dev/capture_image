@@ -1,0 +1,14 @@
+.DS_Store
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# Xcode
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# App runtime output
+CaptureImage/logs/*
+!CaptureImage/logs/.gitkeep
