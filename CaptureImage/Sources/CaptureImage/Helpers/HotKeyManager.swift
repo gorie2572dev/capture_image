@@ -22,6 +22,7 @@ final class HotKeyManager: HotKeyManaging {
     }
 
     func registerCaptureShortcut(handler: @escaping () -> Void) throws {
+        unregisterExistingHotKey()
         self.handler = handler
 
         let hotKeyID = EventHotKeyID(signature: OSType("CIMG".fourCharCode), id: 1)
@@ -62,7 +63,7 @@ final class HotKeyManager: HotKeyManaging {
             return noErr
         }
 
-        InstallEventHandler(
+        let handlerStatus = InstallEventHandler(
             GetApplicationEventTarget(),
             callback,
             1,
@@ -70,16 +71,34 @@ final class HotKeyManager: HotKeyManaging {
             Unmanaged.passUnretained(self).toOpaque(),
             &hotKeyHandler
         )
+        guard handlerStatus == noErr else {
+            unregisterExistingHotKey()
+            throw HotKeyError.handlerInstallationFailed(handlerStatus)
+        }
+    }
+
+    private func unregisterExistingHotKey() {
+        if let hotKeyRef {
+            UnregisterEventHotKey(hotKeyRef)
+            self.hotKeyRef = nil
+        }
+        if let hotKeyHandler {
+            RemoveEventHandler(hotKeyHandler)
+            self.hotKeyHandler = nil
+        }
     }
 }
 
 enum HotKeyError: LocalizedError {
     case registrationFailed(OSStatus)
+    case handlerInstallationFailed(OSStatus)
 
     var errorDescription: String? {
         switch self {
         case .registrationFailed(let status):
             return "Hotkey registration failed with status \(status)."
+        case .handlerInstallationFailed(let status):
+            return "Hotkey handler installation failed with status \(status)."
         }
     }
 }

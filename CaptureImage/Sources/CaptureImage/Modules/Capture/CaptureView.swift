@@ -6,6 +6,7 @@ final class CaptureOverlayWindow: NSWindow {
     var onCancel: (() -> Void)?
 
     private let overlayView = CaptureOverlayView()
+    private var isDismissed = false
     private var combinedScreenFrame: CGRect {
         NSScreen.screens.reduce(CGRect.null) { $0.union($1.frame) }
     }
@@ -49,6 +50,8 @@ final class CaptureOverlayWindow: NSWindow {
     }
 
     func dismissWithoutAnimation() {
+        guard !isDismissed else { return }
+        isDismissed = true
         NSAnimationContext.runAnimationGroup { context in
             context.duration = 0
             orderOut(nil)
@@ -65,6 +68,7 @@ final class CaptureOverlayView: NSView {
 
     private var startPoint: CGPoint?
     private var currentPoint: CGPoint?
+    private var didFinish = false
 
     override var acceptsFirstResponder: Bool { true }
 
@@ -94,6 +98,7 @@ final class CaptureOverlayView: NSView {
     }
 
     override func mouseDown(with event: NSEvent) {
+        guard !didFinish else { return }
         startPoint = convert(event.locationInWindow, from: nil)
         currentPoint = startPoint
         CaptureLogger.info("Overlay mouse down at \(String(describing: startPoint))")
@@ -101,24 +106,26 @@ final class CaptureOverlayView: NSView {
     }
 
     override func mouseDragged(with event: NSEvent) {
+        guard !didFinish else { return }
         currentPoint = convert(event.locationInWindow, from: nil)
         needsDisplay = true
     }
 
     override func mouseUp(with event: NSEvent) {
+        guard !didFinish else { return }
         currentPoint = convert(event.locationInWindow, from: nil)
         guard let rect = selectionRect, rect.width >= AppConstants.minimumCaptureSize, rect.height >= AppConstants.minimumCaptureSize else {
             CaptureLogger.info("Overlay mouse up without valid selection")
-            onCancel?()
+            finishCancel()
             return
         }
         CaptureLogger.info("Overlay mouse up with selection \(rect.debugDescription)")
-        onCapture?(rect)
+        finishCapture(rect)
     }
 
     override func keyDown(with event: NSEvent) {
         if event.keyCode == UInt16(kVK_Escape) {
-            onCancel?()
+            finishCancel()
         }
     }
 
@@ -130,6 +137,18 @@ final class CaptureOverlayView: NSView {
             width: abs(startPoint.x - currentPoint.x),
             height: abs(startPoint.y - currentPoint.y)
         )
+    }
+
+    private func finishCapture(_ rect: CGRect) {
+        guard !didFinish else { return }
+        didFinish = true
+        onCapture?(rect)
+    }
+
+    private func finishCancel() {
+        guard !didFinish else { return }
+        didFinish = true
+        onCancel?()
     }
 
     private func drawHelpText() {
