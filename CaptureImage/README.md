@@ -170,7 +170,7 @@ CaptureImage/.build/CaptureImage.app
 1. Update `CFBundleShortVersionString` and the cask version.
 2. Commit the release, then push a matching `v<version>` tag.
 3. GitHub Actions builds the Apple Silicon archive and publishes the GitHub Release.
-4. Download the published archive, calculate its SHA-256, and replace `sha256 :no_check` in `Casks/captureimage.rb` before announcing the release.
+4. Download the published archive, calculate its SHA-256, and update `Casks/captureimage.rb` before announcing the release.
 
 ## macOS Permissions
 

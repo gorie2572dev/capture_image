@@ -1,6 +1,6 @@
 cask "captureimage" do
   version "0.1.0"
-  sha256 :no_check
+  sha256 "612f0702a7b372a3619180910b9ee5143a57284d6d41a765fb3c587a7c1cea2f"
 
   url "https://github.com/gorie2572dev/capture_image/releases/download/v#{version}/CaptureImage-#{version}.zip",
       verified: "github.com/gorie2572dev/capture_image/"
