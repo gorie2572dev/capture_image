@@ -60,6 +60,7 @@ CaptureImage is distributed as an Apple Silicon macOS cask. Install Homebrew fir
 
 ```bash
 brew tap gorie2572dev/capture_image https://github.com/gorie2572dev/capture_image
+brew trust gorie2572dev/capture_image
 brew install --cask captureimage
 ```
 
