@@ -42,6 +42,24 @@ enum AppTextKey: Equatable, Hashable {
     case quitCaptureImage
     case showShortcuts
     case language
+    case appearance
+    case appearanceBackground
+    case appearanceSolidColors
+    case appearanceGradients
+    case appearanceCustom
+    case appearanceIvory
+    case appearanceGraphite
+    case appearanceMidnight
+    case appearanceSky
+    case appearanceRose
+    case appearanceMint
+    case appearanceLavender
+    case appearanceLemon
+    case appearanceSlate
+    case appearanceCoral
+    case appearanceOcean
+    case appearanceSunset
+    case appearanceAurora
     case shortcutTitle
     case action
     case shortcut
@@ -55,6 +73,7 @@ enum AppTextKey: Equatable, Hashable {
     case showInFinder
     case removeFromList
     case zoomTitle
+    case closePreview
     case couldNotEncodePNG
     case couldNotReadScreenImage
     case screenRecordingPermissionDenied
@@ -95,6 +114,24 @@ enum AppText {
         .quitCaptureImage: "Quit CaptureImage",
         .showShortcuts: "Show Shortcuts",
         .language: "Language",
+        .appearance: "Appearance",
+        .appearanceBackground: "Background",
+        .appearanceSolidColors: "Colors",
+        .appearanceGradients: "Gradients",
+        .appearanceCustom: "Custom Color",
+        .appearanceIvory: "Ivory",
+        .appearanceGraphite: "Graphite",
+        .appearanceMidnight: "Midnight",
+        .appearanceSky: "Sky",
+        .appearanceRose: "Rose",
+        .appearanceMint: "Mint",
+        .appearanceLavender: "Lavender",
+        .appearanceLemon: "Lemon",
+        .appearanceSlate: "Slate",
+        .appearanceCoral: "Coral",
+        .appearanceOcean: "Ocean",
+        .appearanceSunset: "Sunset",
+        .appearanceAurora: "Aurora",
         .shortcutTitle: "CaptureImage Shortcuts",
         .action: "Action",
         .shortcut: "Shortcut",
@@ -108,6 +145,7 @@ enum AppText {
         .showInFinder: "Show in Finder",
         .removeFromList: "Remove from List",
         .zoomTitle: "Image Preview",
+        .closePreview: "Close preview",
         .couldNotEncodePNG: "Could not encode the screenshot as PNG.",
         .couldNotReadScreenImage: "Could not read the selected screen area.",
         .screenRecordingPermissionDenied: "Screen Recording permission is required. Open System Settings > Privacy & Security > Screen Recording, enable CaptureImage, then restart the app."
@@ -121,6 +159,24 @@ enum AppText {
         .quitCaptureImage: "Thoát CaptureImage",
         .showShortcuts: "Hiển thị phím tắt",
         .language: "Ngôn ngữ",
+        .appearance: "Giao diện",
+        .appearanceBackground: "Màu nền",
+        .appearanceSolidColors: "Màu đơn",
+        .appearanceGradients: "Màu chuyển sắc",
+        .appearanceCustom: "Màu tùy chỉnh",
+        .appearanceIvory: "Trắng ngà",
+        .appearanceGraphite: "Than chì",
+        .appearanceMidnight: "Xanh đêm",
+        .appearanceSky: "Xanh trời",
+        .appearanceRose: "Hồng nhạt",
+        .appearanceMint: "Xanh mint",
+        .appearanceLavender: "Oải hương",
+        .appearanceLemon: "Vàng chanh",
+        .appearanceSlate: "Xám xanh",
+        .appearanceCoral: "San hô",
+        .appearanceOcean: "Đại dương",
+        .appearanceSunset: "Hoàng hôn",
+        .appearanceAurora: "Cực quang",
         .shortcutTitle: "Phím tắt CaptureImage",
         .action: "Hành động",
         .shortcut: "Phím tắt",
@@ -134,6 +190,7 @@ enum AppText {
         .showInFinder: "Hiển thị trong Finder",
         .removeFromList: "Xóa khỏi danh sách",
         .zoomTitle: "Xem trước ảnh",
+        .closePreview: "Đóng xem trước",
         .couldNotEncodePNG: "Không thể mã hóa ảnh chụp thành PNG.",
         .couldNotReadScreenImage: "Không thể đọc vùng màn hình đã chọn.",
         .screenRecordingPermissionDenied: "Cần quyền Ghi màn hình. Mở Cài đặt hệ thống > Quyền riêng tư & Bảo mật > Ghi màn hình, bật CaptureImage, rồi khởi động lại app."
@@ -147,6 +204,24 @@ enum AppText {
         .quitCaptureImage: "Quitter CaptureImage",
         .showShortcuts: "Afficher les raccourcis",
         .language: "Langue",
+        .appearance: "Apparence",
+        .appearanceBackground: "Arrière-plan",
+        .appearanceSolidColors: "Couleurs",
+        .appearanceGradients: "Dégradés",
+        .appearanceCustom: "Couleur personnalisée",
+        .appearanceIvory: "Ivoire",
+        .appearanceGraphite: "Graphite",
+        .appearanceMidnight: "Minuit",
+        .appearanceSky: "Ciel",
+        .appearanceRose: "Rose",
+        .appearanceMint: "Menthe",
+        .appearanceLavender: "Lavande",
+        .appearanceLemon: "Citron",
+        .appearanceSlate: "Ardoise",
+        .appearanceCoral: "Corail",
+        .appearanceOcean: "Océan",
+        .appearanceSunset: "Coucher de soleil",
+        .appearanceAurora: "Aurore",
         .shortcutTitle: "Raccourcis CaptureImage",
         .action: "Action",
         .shortcut: "Raccourci",
@@ -160,6 +235,7 @@ enum AppText {
         .showInFinder: "Afficher dans le Finder",
         .removeFromList: "Retirer de la liste",
         .zoomTitle: "Aperçu de l'image",
+        .closePreview: "Fermer l'aperçu",
         .couldNotEncodePNG: "Impossible d'encoder la capture en PNG.",
         .couldNotReadScreenImage: "Impossible de lire la zone sélectionnée.",
         .screenRecordingPermissionDenied: "L'autorisation Enregistrement de l'écran est requise. Ouvrez Réglages Système > Confidentialité et sécurité > Enregistrement de l'écran, activez CaptureImage, puis redémarrez l'app."
@@ -173,6 +249,24 @@ enum AppText {
         .quitCaptureImage: "Exi CaptureImage",
         .showShortcuts: "Monstra Compendia",
         .language: "Lingua",
+        .appearance: "Aspectus",
+        .appearanceBackground: "Fundum",
+        .appearanceSolidColors: "Colores",
+        .appearanceGradients: "Gradus Colorum",
+        .appearanceCustom: "Color Proprius",
+        .appearanceIvory: "Ebur",
+        .appearanceGraphite: "Graphites",
+        .appearanceMidnight: "Media Nox",
+        .appearanceSky: "Caelum",
+        .appearanceRose: "Rosa",
+        .appearanceMint: "Menta",
+        .appearanceLavender: "Lavandula",
+        .appearanceLemon: "Citrus",
+        .appearanceSlate: "Lapis",
+        .appearanceCoral: "Corallium",
+        .appearanceOcean: "Oceanus",
+        .appearanceSunset: "Solis Occasus",
+        .appearanceAurora: "Aurora",
         .shortcutTitle: "Compendia CaptureImage",
         .action: "Actio",
         .shortcut: "Compendium",
@@ -186,6 +280,7 @@ enum AppText {
         .showInFinder: "Monstra in Finder",
         .removeFromList: "Remove ex Indice",
         .zoomTitle: "Praevisio Imaginis",
+        .closePreview: "Claude praevisionem",
         .couldNotEncodePNG: "Non potui capturam in PNG convertere.",
         .couldNotReadScreenImage: "Non potui regionem selectam legere.",
         .screenRecordingPermissionDenied: "Permissio Screen Recording requiritur. Aperi System Settings > Privacy & Security > Screen Recording, activa CaptureImage, deinde app reini."

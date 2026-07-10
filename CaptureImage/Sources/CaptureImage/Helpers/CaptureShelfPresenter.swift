@@ -74,7 +74,7 @@ enum CaptureShelfPresenter {
             y: screenFrame.maxY - height - 18
         )
 
-        CaptureLogger.info("Rendering capture shelf on left side with \(items.count) item(s), \(result.overflowCount) offscreen")
+        CaptureLogger.info("Rendering capture shelf on left side with \(items.count) item(s), \(result.overflowCount) outside viewport")
         panel.setFrame(CGRect(x: origin.x, y: origin.y, width: shelfWidth, height: height), display: true)
         shelfView.render(items: items, overflowCount: result.overflowCount)
         panel.orderFrontRegardless()
@@ -87,38 +87,55 @@ enum CaptureShelfPresenter {
         imageView.imageScaling = .scaleProportionallyUpOrDown
         imageView.translatesAutoresizingMaskIntoConstraints = false
 
-        let title = NSTextField(labelWithString: item.fileURL.lastPathComponent)
-        title.font = .systemFont(ofSize: 13, weight: .medium)
-        title.lineBreakMode = .byTruncatingMiddle
-        title.textColor = CaptureTheme.textPrimary
-        title.translatesAutoresizingMaskIntoConstraints = false
-
-        let container = NSView(frame: CGRect(x: 0, y: 0, width: 760, height: 560))
-        container.wantsLayer = true
-        container.layer?.backgroundColor = CaptureTheme.background.cgColor
-        container.addSubview(title)
+        let screen = panel?.screen ?? NSScreen.main
+        let visibleFrame = screen?.visibleFrame ?? CGRect(x: 0, y: 0, width: 960, height: 640)
+        let frame = CGRect(
+            origin: .zero,
+            size: CGSize(
+                width: min(960, max(520, visibleFrame.width - 180)),
+                height: min(680, max(380, visibleFrame.height - 180))
+            )
+        )
+        let container = PreviewOverlayView(frame: frame)
         container.addSubview(imageView)
 
+        let closeButton = OverlayIconButton(
+            symbolName: "xmark",
+            accessibilityLabel: AppText.value(.closePreview)
+        )
+        closeButton.target = container
+        closeButton.action = #selector(PreviewOverlayView.close)
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(closeButton)
+
         NSLayoutConstraint.activate([
-            title.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 18),
-            title.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -18),
-            title.topAnchor.constraint(equalTo: container.topAnchor, constant: 14),
-            imageView.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 18),
-            imageView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -18),
-            imageView.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 12),
-            imageView.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -18)
+            imageView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            imageView.topAnchor.constraint(equalTo: container.topAnchor),
+            imageView.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            closeButton.topAnchor.constraint(equalTo: container.topAnchor, constant: 20),
+            closeButton.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -20),
+            closeButton.widthAnchor.constraint(equalToConstant: 42),
+            closeButton.heightAnchor.constraint(equalToConstant: 42)
         ])
 
         let panel = NSPanel(
-            contentRect: CGRect(x: 0, y: 0, width: 760, height: 560),
-            styleMask: [.titled, .closable, .resizable],
+            contentRect: frame,
+            styleMask: [.borderless, .fullSizeContentView],
             backing: .buffered,
             defer: false
         )
-        panel.title = AppText.value(.zoomTitle)
         panel.contentView = container
+        panel.isOpaque = false
+        panel.backgroundColor = .clear
+        panel.hasShadow = false
         panel.level = .floating
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
+        panel.animationBehavior = .none
+        panel.isReleasedWhenClosed = false
+        container.onClose = { [weak panel] in
+            panel?.close()
+        }
         panel.center()
         panel.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
@@ -202,13 +219,14 @@ final class CaptureShelfView: NSView {
         rootStackView.spacing = 12
         rootStackView.translatesAutoresizingMaskIntoConstraints = false
 
-        scrollView.hasVerticalScroller = true
+        scrollView.hasVerticalScroller = false
+        scrollView.hasHorizontalScroller = false
         scrollView.autohidesScrollers = true
         scrollView.borderType = .noBorder
         scrollView.drawsBackground = false
+        scrollView.verticalScrollElasticity = .allowed
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.documentView = documentView
-        scrollView.contentView.postsBoundsChangedNotifications = true
 
         stackView.orientation = .vertical
         stackView.alignment = .centerX
@@ -245,13 +263,26 @@ final class FlippedView: NSView {
 final class CaptureShelfItemView: NSView, NSDraggingSource {
     private let item: CaptureShelfItem
     private let filePromiseDelegate: CaptureFilePromiseDelegate
+    private let removeButton = OverlayIconButton(symbolName: "xmark", accessibilityLabel: AppText.value(.removeFromList))
     private var mouseDownEvent: NSEvent?
+    private var trackingArea: NSTrackingArea?
 
     init(item: CaptureShelfItem) {
         self.item = item
         self.filePromiseDelegate = CaptureFilePromiseDelegate(sourceURL: item.fileURL)
         super.init(frame: CGRect(x: 0, y: 0, width: 226, height: 156))
         wantsLayer = true
+        removeButton.alphaValue = 0
+        removeButton.target = self
+        removeButton.action = #selector(removeFromList)
+        removeButton.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(removeButton)
+        NSLayoutConstraint.activate([
+            removeButton.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+            removeButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
+            removeButton.widthAnchor.constraint(equalToConstant: 28),
+            removeButton.heightAnchor.constraint(equalToConstant: 28)
+        ])
     }
 
     required init?(coder: NSCoder) {
@@ -259,30 +290,33 @@ final class CaptureShelfItemView: NSView, NSDraggingSource {
     }
 
     override func draw(_ dirtyRect: NSRect) {
-        let cardRect = bounds.insetBy(dx: 2, dy: 2)
-        let shadowPath = NSBezierPath(roundedRect: cardRect, xRadius: 18, yRadius: 18)
-
-        NSGraphicsContext.saveGraphicsState()
-        let shadow = NSShadow()
-        shadow.shadowColor = NSColor.black.withAlphaComponent(0.26)
-        shadow.shadowOffset = CGSize(width: 0, height: -8)
-        shadow.shadowBlurRadius = 18
-        shadow.set()
-        CaptureTheme.background.setFill()
-        shadowPath.fill()
-        NSGraphicsContext.restoreGraphicsState()
-
-        CaptureTheme.background.setFill()
-        shadowPath.fill()
-        CaptureTheme.border.setStroke()
-        shadowPath.lineWidth = 1
-        shadowPath.stroke()
-
-        let imageRect = cardRect.insetBy(dx: 8, dy: 8)
+        let imageRect = bounds
         NSGraphicsContext.saveGraphicsState()
         NSBezierPath(roundedRect: imageRect, xRadius: 14, yRadius: 14).addClip()
         drawImageAspectFill(in: imageRect)
         NSGraphicsContext.restoreGraphicsState()
+    }
+
+    override func updateTrackingAreas() {
+        if let trackingArea {
+            removeTrackingArea(trackingArea)
+        }
+        let trackingArea = NSTrackingArea(
+            rect: bounds,
+            options: [.activeAlways, .mouseEnteredAndExited, .inVisibleRect],
+            owner: self,
+            userInfo: nil
+        )
+        addTrackingArea(trackingArea)
+        self.trackingArea = trackingArea
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        removeButton.animator().alphaValue = 1
+    }
+
+    override func mouseExited(with event: NSEvent) {
+        removeButton.animator().alphaValue = 0
     }
 
     override func mouseDown(with event: NSEvent) {
@@ -356,6 +390,30 @@ final class CaptureShelfItemView: NSView, NSDraggingSource {
     }
 }
 
+final class OverlayIconButton: NSButton {
+    init(symbolName: String, accessibilityLabel: String) {
+        super.init(frame: .zero)
+        image = NSImage(systemSymbolName: symbolName, accessibilityDescription: accessibilityLabel)
+        image?.size = CGSize(width: 14, height: 14)
+        contentTintColor = .white
+        isBordered = false
+        bezelStyle = .regularSquare
+        wantsLayer = true
+        layer?.backgroundColor = NSColor.black.withAlphaComponent(0.42).cgColor
+        layer?.cornerRadius = 14
+        toolTip = accessibilityLabel
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func updateLayer() {
+        super.updateLayer()
+        layer?.cornerRadius = bounds.height / 2
+    }
+}
+
 final class CaptureShelfOverflowView: NSView {
     private let count: Int
 
@@ -370,8 +428,8 @@ final class CaptureShelfOverflowView: NSView {
     }
 
     override func draw(_ dirtyRect: NSRect) {
-        let pill = NSBezierPath(roundedRect: bounds.insetBy(dx: 28, dy: 2), xRadius: 13, yRadius: 13)
-        CaptureTheme.darkStatus.withAlphaComponent(0.78).setFill()
+        let pill = NSBezierPath(roundedRect: bounds.insetBy(dx: 22, dy: 2), xRadius: 13, yRadius: 13)
+        CaptureTheme.darkStatus.withAlphaComponent(0.58).setFill()
         pill.fill()
 
         let text = "+\(count)"
@@ -384,6 +442,45 @@ final class CaptureShelfOverflowView: NSView {
             at: CGPoint(x: bounds.midX - textSize.width / 2, y: bounds.midY - textSize.height / 2),
             withAttributes: attributes
         )
+    }
+}
+
+final class PreviewOverlayView: NSView {
+    var onClose: (() -> Void)?
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        wantsLayer = true
+        refreshAppearance()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appearanceDidChange(_:)),
+            name: AppAppearance.didChangeNotification,
+            object: nil
+        )
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layout() {
+        super.layout()
+        CaptureTheme.updateGradientFrame(in: self)
+    }
+
+    @objc func close() {
+        onClose?()
+    }
+
+    private func refreshAppearance() {
+        CaptureTheme.applyBackground(to: self)
+        layer?.cornerRadius = 16
+        layer?.masksToBounds = true
+    }
+
+    @objc private func appearanceDidChange(_ notification: Notification) {
+        refreshAppearance()
     }
 }
 

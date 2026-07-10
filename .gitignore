@@ -12,3 +12,4 @@ xcuserdata/
 # App runtime output
 CaptureImage/logs/*
 !CaptureImage/logs/.gitkeep
+CaptureImage/dist/

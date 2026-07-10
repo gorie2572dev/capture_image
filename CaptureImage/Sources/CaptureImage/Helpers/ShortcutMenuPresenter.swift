@@ -39,6 +39,12 @@ final class ShortcutMenuView: NSView {
         self.rows = rows
         super.init(frame: CGRect(x: 0, y: 0, width: 420, height: 300))
         wantsLayer = true
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appearanceDidChange(_:)),
+            name: AppAppearance.didChangeNotification,
+            object: nil
+        )
         build()
     }
 
@@ -58,12 +64,10 @@ final class ShortcutMenuView: NSView {
         shadow.shadowOffset = CGSize(width: 0, height: -8)
         shadow.shadowBlurRadius = 24
         shadow.set()
-        CaptureTheme.darkStatus.setFill()
-        shadowPath.fill()
+        CaptureTheme.fillBackground(in: shadowPath)
         NSGraphicsContext.restoreGraphicsState()
 
-        CaptureTheme.darkStatus.setFill()
-        shadowPath.fill()
+        CaptureTheme.fillBackground(in: shadowPath)
         CaptureTheme.accent.withAlphaComponent(0.65).setStroke()
         shadowPath.lineWidth = 1
         shadowPath.stroke()
@@ -156,5 +160,9 @@ final class ShortcutMenuView: NSView {
 
     @objc private func close() {
         ShortcutMenuPresenter.dismiss()
+    }
+
+    @objc private func appearanceDidChange(_ notification: Notification) {
+        needsDisplay = true
     }
 }

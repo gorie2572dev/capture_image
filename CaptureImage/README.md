@@ -13,7 +13,7 @@
     ·
     <a href="#">Docs</a>
     ·
-    <a href="#">Download</a>
+    <a href="https://github.com/gorie2572dev/capture_image/releases">Download</a>
     ·
     <a href="https://grie-portfolio.vercel.app">Portfolio</a>
   </p>
@@ -52,6 +52,32 @@ The app is designed as a menu bar utility, so it stays out of the Dock and fits 
 - Right-click an image to open quick actions.
 - Repeat the last captured area from the menu bar.
 - Switch the app language between English, Vietnamese, French, and Latin.
+- Choose solid, gradient, or custom backgrounds from the menu bar.
+
+## Install with Homebrew
+
+CaptureImage is distributed as an Apple Silicon macOS cask. Install Homebrew first, then run:
+
+```bash
+brew tap gorie2572dev/capture_image https://github.com/gorie2572dev/capture_image
+brew install --cask captureimage
+```
+
+Open the app from Applications or run:
+
+```bash
+open -a CaptureImage
+```
+
+Update and remove it with:
+
+```bash
+brew update
+brew upgrade --cask captureimage
+brew uninstall --cask captureimage
+```
+
+The app is currently unsigned. macOS may ask you to confirm the first launch. Open it once from Finder with Control-click > Open, then grant Screen Recording permission when prompted.
 
 ## Image Context Menu
 
@@ -71,6 +97,7 @@ Right-click any image in the capture shelf to:
 4. Drag to select the screen area.
 5. Release the mouse to capture.
 6. Use the floating shelf to review, scroll, drag, or right-click recent captures.
+7. Open `Appearance` from the menu bar to change the app background.
 
 ## Shortcuts
 
@@ -137,6 +164,13 @@ The generated app is located at:
 ```text
 CaptureImage/.build/CaptureImage.app
 ```
+
+## Release A New Version
+
+1. Update `CFBundleShortVersionString` and the cask version.
+2. Commit the release, then push a matching `v<version>` tag.
+3. GitHub Actions builds the Apple Silicon archive and publishes the GitHub Release.
+4. Download the published archive, calculate its SHA-256, and replace `sha256 :no_check` in `Casks/captureimage.rb` before announcing the release.
 
 ## macOS Permissions
 

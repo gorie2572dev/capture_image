@@ -28,6 +28,7 @@ final class MenuBarController {
         menu.addItem(NSMenuItem.separator())
         menu.addItem(menuItem(title: AppText.value(.showShortcuts), action: #selector(showShortcuts), keyEquivalent: "?"))
         menu.addItem(languageMenuItem())
+        menu.addItem(menuItem(title: AppText.value(.appearance), action: #selector(showAppearance), keyEquivalent: ""))
         menu.addItem(menuItem(title: AppShortcut.openSaveFolder.title, action: #selector(openSaveFolder), shortcut: .openSaveFolder))
         menu.addItem(NSMenuItem.separator())
         menu.addItem(menuItem(title: AppShortcut.quit.title, action: #selector(quit), shortcut: .quit))
@@ -84,6 +85,10 @@ final class MenuBarController {
 
     @objc private func showShortcuts() {
         ShortcutMenuPresenter.show(rows: AppShortcut.menuRows)
+    }
+
+    @objc private func showAppearance() {
+        AppearanceSettingsPresenter.show()
     }
 
     @objc private func languageSelected(_ sender: NSMenuItem) {

@@ -98,12 +98,23 @@ final class CaptureWarningView: NSView {
         self.onClose = onClose
         super.init(frame: CGRect(x: 0, y: 0, width: 460, height: 190))
         wantsLayer = true
-        layer?.backgroundColor = CaptureTheme.background.cgColor
+        CaptureTheme.applyBackground(to: self)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appearanceDidChange(_:)),
+            name: AppAppearance.didChangeNotification,
+            object: nil
+        )
         build(title: title, message: message)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layout() {
+        super.layout()
+        CaptureTheme.updateGradientFrame(in: self)
     }
 
     private func build(title: String, message: String) {
@@ -157,5 +168,9 @@ final class CaptureWarningView: NSView {
 
     @objc private func close() {
         onClose()
+    }
+
+    @objc private func appearanceDidChange(_ notification: Notification) {
+        CaptureTheme.applyBackground(to: self)
     }
 }
